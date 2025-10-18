@@ -1,3 +1,24 @@
+# Checkpoints
+ckpt/
+checkpoints/
+weights/
+logs/
+output/
+wandb/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Temporary or large data
+data/
+tmp/
+*.zip
+*.tar
+*.h5
+*.pkl
+
+
 # C extensions
 *.so
 
@@ -20,7 +41,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
+GROOT_3B/
 # build artifacts
 
 .eggs/

@@ -32,6 +32,11 @@ class EmbodimentTag(Enum):
     The AgiBot Genie-1 with gripper dataset.
     """
 
+  # LEJU_KUAVO_s43 = "kuavo_s43"
+    """
+    The Leju Kuavo4Pro dataset.
+    """
+
     NEW_EMBODIMENT = "new_embodiment"
     """
     Any new embodiment for finetuning.
@@ -44,4 +49,5 @@ EMBODIMENT_TAG_MAPPING = {
     EmbodimentTag.OXE_DROID.value: 17,
     EmbodimentTag.AGIBOT_GENIE1.value: 26,
     EmbodimentTag.GR1.value: 24,
+#   EmbodimentTag.LEJU_KUAVO_s43.value: 43,
 }

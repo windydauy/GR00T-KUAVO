@@ -136,10 +136,19 @@ Download the model checkpoint and run the inference service.
 ```bash
 python scripts/inference_service.py --model-path nvidia/GR00T-N1.5-3B --server
 ```
+If you want to specify opening a certain port like 6000, add --port 6000(from Aixiaoxiao)
+```
+python scripts/inference_service.py --model-path nvidia/GR00T-N1.5-3B --server --port 6000
+```
 
 On a different terminal, run the client mode to send requests to the server. This will send a random observation to the server and get an action back.
 ```bash
 python scripts/inference_service.py  --client
+```
+  
+The command above doesn't work when I run, but the command below work(from Aixiaoxiao)
+```bash
+python scripts/inference_service.py --client --host localhost --port 5555
 ```
 
 ## 1. Data Format & Loading

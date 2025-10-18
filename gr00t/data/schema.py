@@ -22,12 +22,12 @@ from pydantic import BaseModel, Field, field_serializer
 from .embodiment_tags import EmbodimentTag
 
 # Common schema
-
+'''把磁盘上的 json/parquet 文件 → 转换为 结构化的 Python 对象'''
 
 class RotationType(Enum):
-    """Type of rotation representation"""
+    """枚举所有常见的旋转表示方法"""
 
-    AXIS_ANGLE = "axis_angle"
+    AXIS_ANGLE = "axis_angle" # 旋转轴 + 角度
     QUATERNION = "quaternion"
     ROTATION_6D = "rotation_6d"
     MATRIX = "matrix"
@@ -53,6 +53,7 @@ class LeRobotModalityField(BaseModel):
 
 class LeRobotStateActionMetadata(LeRobotModalityField):
     """Metadata for a LeRobot modality."""
+    ''' state/action 的向量如何切分 '''
 
     start: int = Field(
         ...,

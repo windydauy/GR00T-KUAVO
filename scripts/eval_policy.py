@@ -27,6 +27,8 @@ from gr00t.experiment.data_config import load_data_config
 from gr00t.model.policy import BasePolicy, Gr00tPolicy
 from gr00t.utils.eval import calc_mse_for_single_trajectory
 
+''' 载入模型 checkpoint，对指定dataset按模态执行多条轨迹的推理，输出 GT 与预测动作的 MSE 并支持可选的轨迹可视化。'''
+
 warnings.simplefilter("ignore", category=FutureWarning)
 
 """
@@ -89,7 +91,7 @@ class ArgsConfig:
     denoising_steps: int = 4
     """Number of denoising steps to use."""
 
-    save_plot_path: str = None
+    save_plot_path: str = "./plots/eval_plot.png"
     """Path to save the plot."""
 
     plot_state: bool = False

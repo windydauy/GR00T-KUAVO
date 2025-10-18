@@ -30,6 +30,8 @@ from gr00t.model.action_head.action_encoder import (
 from .cross_attention_dit import DiT, SelfAttentionTransformer
 
 
+''' 参数硬切分，直接为每个emb设立一套映射，减少Xemb负迁移；
+    代价是参数量随emb类别数线性增加。'''
 class CategorySpecificLinear(nn.Module):
     def __init__(self, num_categories, input_dim, hidden_dim):
         super().__init__()

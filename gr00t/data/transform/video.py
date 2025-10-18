@@ -26,6 +26,7 @@ from pydantic import Field, PrivateAttr, field_validator
 from gr00t.data.schema import DatasetMetadata
 from gr00t.data.transform.base import ModalityTransform
 
+'''视频数据的变换 = 视频数据增强与预处理的模块'''
 
 class VideoTransform(ModalityTransform):
     # Configurable attributes

@@ -13,15 +13,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+''' 文件作用:
+1. 统一数据接口:
+    把不同模态（视频、状态、动作、语言、标注）的trajectory打包成 PyTorch Dataset
+2. 跨本体支持：
+    通过 embodiment_tag 和 ModalityConfig 抽象，不依赖具体机器人结构。
+3. 高效读取：
+    parquet + 视频按需解码，或者 Cached 模式直接内存索引。
+4. 支持多数据集混合：
+    LeRobotMixtureDataset 解决 domain gap 和数据分布不均衡问题。 
+'''
 
-"""
-In this file, we define 3 types of datasets:
-1. LeRobotSingleDataset: a single dataset for a given embodiment tag
-2. LeRobotMixtureDataset: a mixture of datasets for a given list of embodiment tags
-3. CachedLeRobotSingleDataset: a single dataset for a given embodiment tag,
-                                with caching for the video frames
+""" 3类 Dataset
+1. LeRobotSingleDataset:
+    针对单个 embodiment（机器人形态标签）的数据集。
+    支持多模态加载（video / state / action / language / annotation）。
+    内部负责读取 parquet（低维数据）和视频帧（图像数据），做 padding、indexing、切片。
 
-See `scripts/load_dataset.py` for examples on how to use these datasets.
+2. CachedLeRobotSingleDataset:
+    继承自 LeRobotSingleDataset。
+    在初始化时把所有视频帧缓存到内存中，后续访问就快很多。
+    适合在反复采样视频的实验场景。
+
+3. LeRobotMixtureDataset:
+    用于把多个 LeRobotSingleDataset 混合成一个“虚拟大数据集”。
+    内部有采样权重机制（dataset-level & trajectory-level balancing），保证训练时样本分布合理。
+    支持合并 metadata，生成混合统计量（mean/std/min/max/q01/q99）。
 """
 
 import hashlib
@@ -57,7 +74,7 @@ LE_ROBOT_DATA_FILENAME = "data/*/*.parquet"
 
 
 def calculate_dataset_statistics(parquet_paths: list[Path]) -> dict:
-    """Calculate the dataset statistics of all columns for a list of parquet files."""
+    """统计 parquet 数据的均值/方差/分位数，用来填充 stats.json"""
     # Dataset statistics
     all_low_dim_data_list = []
     # Collect all the data
@@ -95,7 +112,7 @@ def calculate_dataset_statistics(parquet_paths: list[Path]) -> dict:
 
 
 class ModalityConfig(BaseModel):
-    """Configuration for a modality."""
+    """定义每个模态（视频/状态/动作）的 key 和相对索引（delta indices）"""
 
     delta_indices: list[int]
     """Delta indices to sample relative to the current index. The returned data will correspond to the original data at a sampled base index + delta indices."""

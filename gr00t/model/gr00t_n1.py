@@ -86,6 +86,8 @@ class GR00T_N1_5(PreTrainedModel):
         self.action_dim = config.action_dim
         self.compute_dtype = config.compute_dtype
 
+    ''' validate_inputs和validate_data： 
+        提前失败，检测model concat和data alignment阶段的不匹配。'''
     def validate_inputs(self, inputs):
         # NOTE -- this should be handled internally by the model
         # however, doing that will likely be breaking changes -- so we'll need to do it after the deadline
@@ -100,6 +102,7 @@ class GR00T_N1_5(PreTrainedModel):
                 and action.shape[1] == self.action_horizon
                 and action.shape[2] == self.action_dim
             )
+            ''' action 形状为 (B, action_horizon, action_dim)'''
             if not type_ok:
                 error_msg += f"\n{action.dtype=}"
                 detected_error = True
@@ -112,6 +115,7 @@ class GR00T_N1_5(PreTrainedModel):
             type_ok = isinstance(video, np.ndarray)
             dtype_ok = video.dtype == np.uint8
             shape_ok = len(video.shape) == 6 and video.shape[3] == N_COLOR_CHANNELS
+            ''' video 是 np.uint8 且形状为 6 维'''
             if not type_ok:
                 error_msg += f"\n{type(video)=}"
                 detected_error = True
@@ -158,16 +162,18 @@ class GR00T_N1_5(PreTrainedModel):
             error_msg += f"\n{self.action_dim=}"
             raise ValueError(error_msg)
 
+    # 训练前向接口，返回包含 loss 的 BatchFeature
     def forward(
         self,
         inputs: dict,
     ) -> BatchFeature:
         backbone_inputs, action_inputs = self.prepare_input(inputs)
         backbone_outputs = self.backbone(backbone_inputs)
-        action_head_outputs = self.action_head(backbone_outputs, action_inputs)
+        action_head_outputs = self.action_head(backbone_outputs, action_inputs) # 训练态
         self.validate_data(action_head_outputs, backbone_outputs, is_training=True)
-        return action_head_outputs
+        return action_head_outputs 
 
+    # 推理前向接口，返回包含 action_pred 的 BatchFeature
     def get_action(
         self,
         inputs: dict,
@@ -175,7 +181,7 @@ class GR00T_N1_5(PreTrainedModel):
         backbone_inputs, action_inputs = self.prepare_input(inputs)
         # Because the behavior of backbones remains the same for training and inference, we can use `forward` for backbones.
         backbone_outputs = self.backbone(backbone_inputs)
-        action_head_outputs = self.action_head.get_action(backbone_outputs, action_inputs)
+        action_head_outputs = self.action_head.get_action(backbone_outputs, action_inputs)   # 推理态
         self.validate_data(action_head_outputs, backbone_outputs, is_training=False)
         return action_head_outputs
 

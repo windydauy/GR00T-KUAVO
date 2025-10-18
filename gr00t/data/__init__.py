@@ -12,3 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+
+''' gr00t/data 是“数据层”的核心，
+    负责把磁盘上的LEROBOT格式的 episode 轨迹（parquet + meta + 可选视频）
+    按模型需要读进来、校验、切片并变换为训练/推理可用的张量批次。'''

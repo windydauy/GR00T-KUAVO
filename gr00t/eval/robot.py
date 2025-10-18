@@ -19,6 +19,7 @@ from gr00t.data.dataset import ModalityConfig
 from gr00t.eval.service import BaseInferenceClient, BaseInferenceServer
 from gr00t.model.policy import BasePolicy
 
+''' 真机通讯 服务端与客户端 '''
 
 class RobotInferenceServer(BaseInferenceServer):
     """
